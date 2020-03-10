@@ -3,14 +3,20 @@
 @{
     ViewBag.Title = "Index";
 }
-
+<head>
+    <style>
+        a{
+            color:white;
+        }
+    </style>
+</head>
 <h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
-    <tr>
+<table class="table" style="background-color:gray">
+    <tr style="background-color: dimgray">
         <th>
             @Html.DisplayNameFor(model => model.Price)
         </th>

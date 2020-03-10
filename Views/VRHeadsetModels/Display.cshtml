@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Chapter4CodeFirst.Models.VRHeadsetModels>
+
+@{
+    ViewBag.Title = "Headset Listings";
+}
+
+<h2>Index</h2>
+
+
+<table class="table table-hover" style="background-color: gray">
+    <tr style="background-color:dimgray">
+        <th>
+            @Html.DisplayNameFor(model => model.HeadsetName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.AvailableStoreName)
+        </th> 
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HeadsetName)
+            </td>
+            <td>
+               $@Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AvailableStoreName)
+            </td>
+          
+        </tr>
+    }
+
+</table>

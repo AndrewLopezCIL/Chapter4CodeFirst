@@ -21,6 +21,11 @@ namespace Chapter4CodeFirst.Controllers
             return View(db.VRHeadsetModels.ToList());
         }
 
+        public ActionResult Display()
+        {
+            return View(db.VRHeadsetModels.ToList());
+        }
+
         // GET: VRHeadsetModels/Details/5
         public ActionResult Details(int? id)
         {

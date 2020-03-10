@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using Chapter4CodeFirst.Models;
 namespace Chapter4CodeFirst.Controllers
 {
     public class HomeController : Controller
@@ -26,5 +26,6 @@ namespace Chapter4CodeFirst.Controllers
 
             return View();
         }
+         
     }
 }
