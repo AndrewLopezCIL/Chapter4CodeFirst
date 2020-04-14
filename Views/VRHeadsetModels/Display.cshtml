@@ -32,7 +32,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.AvailableStoreName)
             </td>
-          
+          <td>@Html.ActionLink("Edit", "EditDisplay", new { id = item.HeadsetID })</td>
         </tr>
     }
 

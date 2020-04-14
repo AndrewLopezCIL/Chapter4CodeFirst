@@ -21,6 +21,34 @@ namespace Chapter4CodeFirst.Controllers
             return View(db.VRHeadsetModels.ToList());
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditDisplay([Bind(Include = "HeadsetID,Price,AvailableStoreName,HeadsetName")] VRHeadsetModels vrheadsetmodel)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(vrheadsetmodel).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Display");
+            }
+            return View(vrheadsetmodel);
+        }
+
+        // GET: Student/Edit/5
+        public ActionResult EditDisplay(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            VRHeadsetModels vrheadsetmodel = db.VRHeadsetModels.Find(id);
+            if (vrheadsetmodel == null)
+            {
+                return HttpNotFound();
+            }
+            return View(vrheadsetmodel);
+        }
+
         public ActionResult Display()
         {
             return View(db.VRHeadsetModels.ToList());

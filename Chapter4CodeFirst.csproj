@@ -298,6 +298,7 @@
     <Content Include="Views\VRHeadsetModels\Edit.cshtml" />
     <Content Include="Views\VRHeadsetModels\Index.cshtml" />
     <Content Include="Views\VRHeadsetModels\Display.cshtml" />
+    <Content Include="Views\VRHeadsetModels\EditDisplay.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
