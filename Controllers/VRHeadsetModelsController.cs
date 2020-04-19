@@ -20,7 +20,36 @@ namespace Chapter4CodeFirst.Controllers
         {
             return View(db.VRHeadsetModels.ToList());
         }
+        public ActionResult EditDisplay(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            VRHeadsetModels vRHeadsetModels = db.VRHeadsetModels.Find(id);
+            if (vRHeadsetModels == null)
+            {
+                return HttpNotFound();
+            }
+            return View(vRHeadsetModels);
+        }
 
+        // POST: VRHeadsetModels/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditDisplay([Bind(Include = "HeadsetID,Price,AvailableStoreName,HeadsetName")] VRHeadsetModels vRHeadsetModels)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(vRHeadsetModels).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return View(vRHeadsetModels);
+        }
+        
         public ActionResult Display()
         {
             return View(db.VRHeadsetModels.ToList());
@@ -84,7 +113,7 @@ namespace Chapter4CodeFirst.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "HeadsetID,Price,AvailableStoreID,HeadsetName")] VRHeadsetModels vRHeadsetModels)
+        public ActionResult Edit([Bind(Include = "HeadsetID,Price,AvailableStoreName,HeadsetName")] VRHeadsetModels vRHeadsetModels)
         {
             if (ModelState.IsValid)
             {

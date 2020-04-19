@@ -13,5 +13,7 @@ namespace Chapter4CodeFirst.Models
         [Key]
         public int StoreID { get; set; }
         public string StoreName { get; set; }
+
+        public virtual ICollection<BundlesModels> BundlesModels{ get; set; }
     }
 }

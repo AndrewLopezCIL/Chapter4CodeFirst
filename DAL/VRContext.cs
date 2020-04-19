@@ -20,6 +20,11 @@ namespace Chapter4CodeFirst.DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Entity<StoresModels>()
+               .HasMany(c => c.BundlesModels).WithMany(i => i.StoresModels)
+               .Map(t => t.MapLeftKey("StoreID")
+                   .MapRightKey("BundleID")
+                   .ToTable("StoreBundles"));
         }
     }
 }

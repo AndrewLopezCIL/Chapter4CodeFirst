@@ -10,8 +10,11 @@ namespace Chapter4CodeFirst.Models
     {
         [Key]
         public int HeadsetID { get; set; }
-        public double Price { get; set; }
+
+        public double Price { get; set; } 
         public string AvailableStoreName { get; set; }
         public string HeadsetName { get; set; }
+
+        public virtual ICollection<BundlesModels> BundlesModels { get; set; }
     }
 }
