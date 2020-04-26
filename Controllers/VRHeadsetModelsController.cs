@@ -8,7 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using Chapter4CodeFirst.DAL;
 using Chapter4CodeFirst.Models;
-
+using PagedList;
+using PagedList.Mvc;
 namespace Chapter4CodeFirst.Controllers
 {
     public class VRHeadsetModelsController : Controller
@@ -16,9 +17,46 @@ namespace Chapter4CodeFirst.Controllers
         private VRContext db = new VRContext();
 
         // GET: VRHeadsetModels
-        public ActionResult Index()
+        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            return View(db.VRHeadsetModels.ToList());
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+            ViewBag.CurrentFilter = searchString;
+
+            var vrheadset = from s in db.VRHeadsetModels
+                           select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                vrheadset = vrheadset.Where(s => s.HeadsetName.Contains(searchString) || s.AvailableStoreName.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    vrheadset = vrheadset.OrderByDescending(s => s.HeadsetName);
+                    break;
+                case "Date":
+                    vrheadset = vrheadset.OrderBy(s => s.AvailableStoreName);
+                    break;
+                case "date_desc":
+                    vrheadset = vrheadset.OrderByDescending(s => s.AvailableStoreName);
+                    break;
+                default:
+                    vrheadset = vrheadset.OrderBy(s => s.HeadsetName);
+                    break;
+            }
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+            return View(vrheadset.ToPagedList(pageNumber, pageSize));
         }
         public ActionResult EditDisplay(int? id)
         {
@@ -41,11 +79,18 @@ namespace Chapter4CodeFirst.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult EditDisplay([Bind(Include = "HeadsetID,Price,AvailableStoreName,HeadsetName")] VRHeadsetModels vRHeadsetModels)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Entry(vRHeadsetModels).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.Entry(vRHeadsetModels).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DataException)
+            {
+                ModelState.AddModelError("","Unable to save changes. Try again, if the problem persists please contact your systems administrator.");
             }
             return View(vRHeadsetModels);
         }
@@ -83,11 +128,19 @@ namespace Chapter4CodeFirst.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "HeadsetID,Price,AvailableStoreID,HeadsetName")] VRHeadsetModels vRHeadsetModels)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.VRHeadsetModels.Add(vRHeadsetModels);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    db.VRHeadsetModels.Add(vRHeadsetModels);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DataException)
+            {
+                ModelState.AddModelError("", "Unable to save changes. Try again, if the problem persists please contact your systems administrator.");
+
             }
 
             return View(vRHeadsetModels);
@@ -117,19 +170,29 @@ namespace Chapter4CodeFirst.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(vRHeadsetModels).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                try
+                {
+                    db.Entry(vRHeadsetModels).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                catch (DataException) {
+                    ModelState.AddModelError("", "Unable to save changes. Try again, if the problem persists please contact your systems administrator.");
+                }
             }
             return View(vRHeadsetModels);
         }
 
         // GET: VRHeadsetModels/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            if (saveChangesError.GetValueOrDefault())
+            {
+                ModelState.AddModelError("", "Delete Failed. Try again, if the problem persists please contact your systems administrator.");
             }
             VRHeadsetModels vRHeadsetModels = db.VRHeadsetModels.Find(id);
             if (vRHeadsetModels == null)
@@ -144,10 +207,18 @@ namespace Chapter4CodeFirst.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            VRHeadsetModels vRHeadsetModels = db.VRHeadsetModels.Find(id);
-            db.VRHeadsetModels.Remove(vRHeadsetModels);
-            db.SaveChanges();
+            try
+            { 
+                VRHeadsetModels vRHeadsetModels = db.VRHeadsetModels.Find(id);
+                db.VRHeadsetModels.Remove(vRHeadsetModels);
+                db.SaveChanges();
             return RedirectToAction("Index");
+
+            }
+            catch (DataException)
+            {
+            return RedirectToAction("Delete", new { id = id, saveChangesError = true});
+            }
         }
 
         protected override void Dispose(bool disposing)
